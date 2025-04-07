@@ -6,10 +6,45 @@ const port = 3042;
 app.use(cors());
 app.use(express.json());
 
+const secp = require("ethereum-cryptography/secp256k1");
+const { toHex } = require("ethereum-cryptography/utils");
+const { keccak256 } = require("ethereum-cryptography/keccak");
+
+// Function to generate an Ethereum address from a private key
+function generateWallet() {
+  // 1. Generate random private key
+  const privateKey = secp.utils.randomPrivateKey();
+  console.log("Private key:", toHex(privateKey));
+
+  // 2. Derive public key from private key (compressed format)
+  const publicKey = secp.getPublicKey(privateKey);
+  console.log("Public key:", toHex(publicKey));
+
+  // 3. Convert public key to Ethereum address
+  // - Remove first byte (compression indicator)
+  // - Hash with Keccak-256
+  // - Take last 20 bytes
+  const ethAddress =
+    "0x" + toHex(keccak256(publicKey.slice(1)).slice(-40)).toLowerCase();
+
+  console.log("Ethereum address:", ethAddress);
+  return {
+    privateKey: toHex(privateKey),
+    publicKey: toHex(publicKey),
+    address: ethAddress,
+  };
+}
+
+// Generate 3 wallets
+const wallet1 = generateWallet();
+const wallet2 = generateWallet();
+const wallet3 = generateWallet();
+
+// Create balances object using the addresses
 const balances = {
-  "0x1": 100,
-  "0x2": 50,
-  "0x3": 75,
+  [wallet1.address]: 100,
+  [wallet2.address]: 50,
+  [wallet3.address]: 75,
 };
 
 app.get("/balance/:address", (req, res) => {

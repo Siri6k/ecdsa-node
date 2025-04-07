@@ -22,6 +22,16 @@ label {
   margin: 0 auto;
 }
 
+.footer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  font-size: .8em;
+  color: #4a5568;
+  font-weight: 400;
+  text-align: center;
+}
 .container {
   flex-grow: 1;
   margin: 0 20px;
